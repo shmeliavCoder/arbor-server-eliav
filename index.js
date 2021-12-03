@@ -36,7 +36,7 @@ app.post('/uploadFile', async function (req, res) {
         if (err)
             return res.status(500).send(err);
 
-        res.send('File uploaded!');
+        console.log("File uploaded")
     });
 
     /**
