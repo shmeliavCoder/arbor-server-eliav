@@ -1,18 +1,21 @@
 const { Pool, Client } = require("pg");
 
-let pool 
+let pool
 
-try {
-  pool = new Pool({
-    user: "postgres",
-    host: "34.79.249.65",
-    database: "postgres",
-    password: "fx2qGG1ctyy78uaD",
-    port: "5432"
-  });
-}
-catch (err) {
-  console.log("Failed to start pool", err)
+exports.initPool = () => {
+  try {
+    pool = new Pool({
+      user: "postgres",
+      host: "34.79.249.65",
+      database: "postgres",
+      password: "fx2qGG1ctyy78uaD",
+      port: "5432"
+    });
+  }
+  catch (err) {
+    console.log("Failed to start pool", err)
+  }
+
 }
 
 

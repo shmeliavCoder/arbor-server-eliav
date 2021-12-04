@@ -3,10 +3,12 @@ const fileUpload = require('express-fileupload');
 const fs = require('fs')
 const cors = require('cors')
 const uuidv4 = require('uuid').v4
-const { insertImage } = require('./dal')
+const { insertImage, initPool } = require('./dal')
 const { Storage } = require('@google-cloud/storage');
 const app = express()
 const port = 5000
+
+initPool();
 
 app.options('*', cors());
 app.use(cors());
