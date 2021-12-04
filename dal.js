@@ -6,7 +6,7 @@ exports.initPool = () => {
   try {
     pool = new Pool({
       user: "postgres",
-      host: "34.79.249.65",
+      host: "172.21.128.3",
       database: "postgres",
       password: "fx2qGG1ctyy78uaD",
       port: "5432"
