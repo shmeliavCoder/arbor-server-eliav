@@ -13,12 +13,8 @@ exports.insertImage = (imageName, date) => {
         text: 'INSERT INTO public."IMAGES"("imagePath", "dateToShow") VALUES ($1, $2);',
         values: [imageName, new Date(date)],
       }
-    pool.query(
-        query,
-        (err, res) => {
-          console.log(err, res);
-          pool.end();
-        }
+    return pool.query(
+        query
       );
 }
 
