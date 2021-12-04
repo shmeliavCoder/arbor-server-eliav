@@ -1,6 +1,6 @@
 const { Pool, Client } = require("pg");
 
-const client = new Client({
+const pool = new Pool({
   user: "postgres",
   host: "34.79.249.65",
   database: "postgres",
@@ -9,31 +9,35 @@ const client = new Client({
 });
 
 exports.insertImage = async (imageName, date) => {
-    const query = {
-        text: 'INSERT INTO public."IMAGES"("imagePath", "dateToShow") VALUES ($1, $2);',
-        values: [imageName, new Date(date)],
-      }
-    try {
-        const res = await client.query(query);
-        console.log('INSERT worked');
-    } catch (err) {
-        console.log(err.stack);
-    } finally {
-        client.close();
-    }
+  let client;
+  const query = {
+    text: 'INSERT INTO public."IMAGES"("imagePath", "dateToShow") VALUES ($1, $2);',
+    values: [imageName, new Date(date)],
+  }
+  try {
+    client = await pool.connect()
+    const res = await client.query(query);
+    console.log('INSERT worked');
+  } catch (err) {
+    console.log(err.stack);
+  } finally {
+    client.release();
+  }
 }
 
 exports.getImages = (imageName, date) => {
+  let client;
   const query = {
-      text: 'SELECT * FROM public."IMAGES" WHERE ',
-      values: [imageName, new Date(date)],
-    }
-    try {
-      const res = await client.query(query);
-      console.log('INSERT worked');
+    text: 'SELECT * FROM public."IMAGES" WHERE ',
+    values: [imageName, new Date(date)],
+  }
+  try {
+    client = await pool.connect()
+    const res = await client.query(query);
+    console.log('INSERT worked');
   } catch (err) {
-      console.log(err.stack);
+    console.log(err.stack);
   } finally {
-      client.close();
+    client.release();
   }
 }
