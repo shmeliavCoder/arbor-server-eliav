@@ -6,6 +6,9 @@ const uuidv4 = require('uuid').v4
 const { insertImage, initPool, getImages } = require('./dal')
 const { Storage } = require('@google-cloud/storage');
 const app = express()
+const { Server } = require("socket.io");
+const http = require('http');
+
 const port = 5000
 
 initPool();
@@ -15,12 +18,12 @@ app.use(cors());
 app.use(fileUpload());
 
 app.get('/welcome', (req, res) => {
-    res.send('yo')
+    res.send('test')
 })
 
 app.post('/uploadFile', async function (req, res) {
     let sampleFile;
-    let uploadPath;
+    let localServerFilePath;
 
     if (!req.files || Object.keys(req.files).length === 0) {
         return res.status(400).send('No files were uploaded.');
@@ -28,16 +31,15 @@ app.post('/uploadFile', async function (req, res) {
 
     // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
     sampleFile = req.files.File;
-    const bucketFileName = [uuidv4() , ...sampleFile.name.split('.').slice(1,2)].join(".")
-    uploadPath = __dirname + '/images/' + bucketFileName;
+    const uniqueFileName = [uuidv4() , ...sampleFile.name.split('.').slice(1,2)].join(".")
+    localServerFilePath = __dirname + '/images/' + uniqueFileName;
 
-    console.log("new name for file is: " , bucketFileName)
+    console.log("new name for file is: " , uniqueFileName)
 
-    // Use the mv() method to place the file somewhere on your server
     try {
         !fs.existsSync(__dirname + '/images') && fs.mkdirSync(__dirname + '/images', { recursive: true })
         
-        fs.writeFileSync(uploadPath, sampleFile.data);
+        fs.writeFileSync(localServerFilePath, sampleFile.data);
         console.log("File added")
     }
     catch(err) {
@@ -48,27 +50,24 @@ app.post('/uploadFile', async function (req, res) {
 
     // The ID of your GCS bucket
     const bucketName = 'eu.artifacts.bamboo-volt-333817.appspot.com';
-    const cloudImagePath = "images/" + bucketFileName
-
-
-    // UNCOMMENT THIS UPLOADS TO GCP
+    const cloudImagePath = "images/" + uniqueFileName
 
     // Creates a client
     const storage = new Storage();
 
     async function uploadFile() {
-        await storage.bucket(bucketName).upload(uploadPath, {
+        await storage.bucket(bucketName).upload(localServerFilePath, {
             destination: cloudImagePath,
         });
 
-        console.log(`${uploadPath} uploaded to ${bucketName}`);
+        console.log(`${localServerFilePath} uploaded to ${bucketName}`);
     }
 
     try {
         await uploadFile();
         await insertImage(cloudImagePath, req?.body?.DateTime)
-        if (fs.existsSync(uploadPath)) {
-            fs.unlink(uploadPath, (err) => {
+        if (fs.existsSync(localServerFilePath)) {
+            fs.unlink(localServerFilePath, (err) => {
                 if (err) {
                     console.log(err);
                 }
@@ -82,19 +81,30 @@ app.post('/uploadFile', async function (req, res) {
     }
 });
 
-app.post('/imageTask', async function (req, res) {
-
-
-
-    res.send({hasChanged: true, imageUrl:`someImage/path`})
-})
+let image = {}
 
 app.get('/getImage', async (req, res) => {
     const data = await getImages()
-    res.send(data)
+    if(JSON.stringify(data) !== JSON.stringify(image)) {
+        image = data
+        io.emit("new-image", image);
+    }
+
+    res.send(image)
 })
 
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+      origin: "*",
+      methods: ["GET", "POST"]
+    }
+  })
 
-app.listen(port, () => {
+io.on("connection", function(socket) {
+    console.log('a user connected');
+});
+
+server.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
 })

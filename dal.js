@@ -7,9 +7,9 @@ exports.initPool = () => {
     pool = new Pool({
       user: "postgres",
       //host: "172.21.128.3", // internal
-      //host: "34.79.249.65", // external
-      //port: "5432"
-      host: "/cloudsql/bamboo-volt-333817:europe-west1:arbor-yuval", // </.s.PGSQL.5432>
+      host: "34.79.249.65", // external
+      port: "5432",
+      // host: "/cloudsql/bamboo-volt-333817:europe-west1:arbor-yuval", // </.s.PGSQL.5432>
       database: "postgres",
       password: "fx2qGG1ctyy78uaD",
     });
