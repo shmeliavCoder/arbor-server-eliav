@@ -3,7 +3,7 @@ const fileUpload = require('express-fileupload');
 const fs = require('fs')
 const cors = require('cors')
 const uuidv4 = require('uuid').v4
-const { insertImage, initPool } = require('./dal')
+const { insertImage, initPool, getImages } = require('./dal')
 const { Storage } = require('@google-cloud/storage');
 const app = express()
 const port = 5000
@@ -87,6 +87,11 @@ app.post('/imageTask', async function (req, res) {
 
 
     res.send({hasChanged: true, imageUrl:`someImage/path`})
+})
+
+app.get('/getImage', async (req, res) => {
+    const data = await getImages()
+    res.send(data)
 })
 
 

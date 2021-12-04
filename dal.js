@@ -6,12 +6,12 @@ exports.initPool = () => {
   try {
     pool = new Pool({
       user: "postgres",
-      //host: "172.21.128.3",
-      // host: "34.79.249.65",
-      host: "bamboo-volt-333817:europe-west1:arbor-yuval",
+      //host: "172.21.128.3", // internal
+      //host: "34.79.249.65", // external
+      //port: "5432"
+      host: "/cloudsql/bamboo-volt-333817:europe-west1:arbor-yuval/.s.PGSQL.5432",
       database: "postgres",
       password: "fx2qGG1ctyy78uaD",
-      port: "5432"
     });
   }
   catch (err) {
@@ -39,17 +39,20 @@ exports.insertImage = async (imageName, date) => {
 
 exports.getImages = async (imageName, date) => {
   let client;
+  let res
   const query = {
-    text: 'SELECT * FROM public."IMAGES" WHERE ',
-    values: [imageName, new Date(date)],
+    text: 'SELECT "imagePath", "dateToShow" FROM "IMAGES" WHERE "dateToShow" = (SELECT max("dateToShow") FROM "IMAGES" b WHERE b."dateToShow" < CURRENT_TIMESTAMP)',
+    values: [],
   }
   try {
     client = await pool.connect()
-    const res = await client.query(query);
-    console.log('INSERT worked');
+    res = await client.query(query);
+    console.log('image', res?.rows?.[0]);
   } catch (err) {
     console.log(err.stack);
   } finally {
     client.release();
   }
+
+  return res.rows[0]
 }
