@@ -25,7 +25,7 @@ exports.insertImage = async (imageName, date) => {
   }
 }
 
-exports.getImages = (imageName, date) => {
+exports.getImages = async (imageName, date) => {
   let client;
   const query = {
     text: 'SELECT * FROM public."IMAGES" WHERE ',
