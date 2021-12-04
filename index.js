@@ -33,7 +33,7 @@ app.post('/uploadFile', async function (req, res) {
 
     // Use the mv() method to place the file somewhere on your server
     try {
-        await fs.writeFileSync(uploadPath, sampleFile.data);
+        fs.writeFileSync(uploadPath, sampleFile.data);
         console.log("File added")
     }
     catch(err) {
