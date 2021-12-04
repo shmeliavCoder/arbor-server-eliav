@@ -33,6 +33,11 @@ app.post('/uploadFile', async function (req, res) {
 
     // Use the mv() method to place the file somewhere on your server
     try {
+        if (fs.existsSync(__dirname + '/images')) {
+            console.log("YES I EXIST BRAH")
+        } else {
+            console.log("NOOOO PLEASE BRAH")
+        }
         fs.writeFileSync(uploadPath, sampleFile.data);
         console.log("File added")
     }
