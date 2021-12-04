@@ -6,7 +6,9 @@ exports.initPool = () => {
   try {
     pool = new Pool({
       user: "postgres",
-      host: "172.21.128.3",
+      //host: "172.21.128.3",
+      // host: "34.79.249.65",
+      host: "bamboo-volt-333817:europe-west1:arbor-yuval",
       database: "postgres",
       password: "fx2qGG1ctyy78uaD",
       port: "5432"
@@ -15,7 +17,6 @@ exports.initPool = () => {
   catch (err) {
     console.log("Failed to start pool", err)
   }
-
 }
 
 
