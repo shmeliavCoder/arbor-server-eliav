@@ -26,22 +26,22 @@ app.post('/uploadFile', async function (req, res) {
 
     // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
     sampleFile = req.files.File;
-    uploadPath = __dirname + '/images/' + sampleFile.name;
     const bucketFileName = [uuidv4() , ...sampleFile.name.split('.').slice(1,2)].join(".")
+    uploadPath = __dirname + '/images/' + bucketFileName;
 
     console.log("new name for file is: " , bucketFileName)
 
     // Use the mv() method to place the file somewhere on your server
-    sampleFile.mv(uploadPath, function (err) {
-        if (err)
-            return res.status(500).send(err);
+    try {
+        await fs.writeFileSync(uploadPath, sampleFile.data);
+        console.log("File added")
+    }
+    catch(err) {
+        console.log(err)
+        return res.status(500).send(err);
+    }
 
-        console.log("File uploaded")
-    });
 
-    /**
-     * TODO(developer): Uncomment the following lines before running the sample.
-     */
     // The ID of your GCS bucket
     const bucketName = 'eu.artifacts.bamboo-volt-333817.appspot.com';
     const cloudImagePath = "images/" + bucketFileName
