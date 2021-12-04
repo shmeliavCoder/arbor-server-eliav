@@ -21,3 +21,17 @@ exports.insertImage = (imageName, date) => {
         }
       );
 }
+
+exports.getImages = (imageName, date) => {
+  const query = {
+      text: 'SELECT * FROM public."IMAGES" WHERE ',
+      values: [imageName, new Date(date)],
+    }
+  pool.query(
+      query,
+      (err, res) => {
+        console.log(err, res);
+        pool.end();
+      }
+    );
+}

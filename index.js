@@ -64,7 +64,7 @@ app.post('/uploadFile', async function (req, res) {
 
     try {
         await uploadFile();
-        insertImage(cloudImagePath, req?.body?.DateTime)
+        await insertImage(cloudImagePath, req?.body?.DateTime)
         if (fs.existsSync(uploadPath)) {
             fs.unlink(uploadPath, (err) => {
                 if (err) {
@@ -80,6 +80,12 @@ app.post('/uploadFile', async function (req, res) {
     }
 });
 
+app.post('/imageTask', async function (req, res) {
+
+
+
+    res.send({hasChanged: true, imageUrl:`someImage/path`})
+})
 
 
 app.listen(port, () => {
